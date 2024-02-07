@@ -1,4 +1,4 @@
-from PyQt5 import QtWidgets, QtGui
+from PyQt6 import QtWidgets, QtGui, QtCore
 from components import Database as db
 from py_ui import Subject as Parent
 import json
@@ -20,12 +20,15 @@ class Subject:
         self.setupInstructors()
         parent.btnFinish.clicked.connect(self.finish)
         parent.btnCancel.clicked.connect(self.dialog.close)
-        dialog.exec_()
+        dialog.exec()
 
     def fillForm(self):
         conn = db.getConnection()
         cursor = conn.cursor()
-        cursor.execute('SELECT name, hours, code, description, divisible, type FROM subjects WHERE id = ?', [self.id])
+        cursor.execute(
+            "SELECT name, hours, code, description, divisible, type FROM subjects WHERE id = ?",
+            [self.id],
+        )
         result = cursor.fetchone()
         conn.close()
         self.parent.lineEditName.setText(str(result[0]))
@@ -36,9 +39,9 @@ class Subject:
             self.parent.radioYes.setChecked(True)
         else:
             self.parent.radioNo.setChecked(True)
-        if result[5] == 'lec':
+        if result[5] == "lec":
             self.parent.radioLec.setChecked(True)
-        elif result[5] == 'lab':
+        elif result[5] == "lab":
             self.parent.radioLab.setChecked(True)
         else:
             self.parent.radioAny.setChecked(True)
@@ -46,24 +49,30 @@ class Subject:
     def setupInstructors(self):
         self.tree = tree = self.parent.treeSchedule
         self.model = model = QtGui.QStandardItemModel()
-        model.setHorizontalHeaderLabels(['ID', 'Available', 'Name'])
+        model.setHorizontalHeaderLabels(["ID", "Available", "Name"])
         tree.setModel(model)
         tree.setColumnHidden(0, True)
         conn = db.getConnection()
         cursor = conn.cursor()
-        cursor.execute('SELECT id, name FROM instructors WHERE active = 1')
+        cursor.execute("SELECT id, name FROM instructors WHERE active = 1")
         instructors = cursor.fetchall()
         subjectAssignments = []
         if self.id:
-            cursor.execute('SELECT instructors FROM subjects WHERE id = ?', [self.id])
-            subjectAssignments = list(map(lambda id: int(id), json.loads(cursor.fetchone()[0])))
+            cursor.execute("SELECT instructors FROM subjects WHERE id = ?", [self.id])
+            subjectAssignments = list(
+                map(lambda id: int(id), json.loads(cursor.fetchone()[0]))
+            )
         conn.close()
         for entry in instructors:
             id = QtGui.QStandardItem(str(entry[0]))
             id.setEditable(False)
             availability = QtGui.QStandardItem()
             availability.setCheckable(True)
-            availability.setCheckState(2 if entry[0] in subjectAssignments else 0)
+            availability.setCheckState(
+                QtCore.Qt.CheckState.Checked
+                if entry[0] in subjectAssignments
+                else QtCore.Qt.CheckState.Unchecked
+            )
             availability.setEditable(False)
             name = QtGui.QStandardItem(str(entry[1]))
             name.setEditable(False)
@@ -74,13 +83,16 @@ class Subject:
             return False
         if not self.parent.lineEditCode.text():
             return False
-        if not self.parent.lineEditHours.text() or float(self.parent.lineEditHours.text()) < 0 or float(
-                self.parent.lineEditHours.text()) > 12 or not (
-                float(self.parent.lineEditHours.text()) / .5).is_integer():
+        if (
+            not self.parent.lineEditHours.text()
+            or float(self.parent.lineEditHours.text()) < 0
+            or float(self.parent.lineEditHours.text()) > 12
+            or not (float(self.parent.lineEditHours.text()) / 0.5).is_integer()
+        ):
             return False
         instructors = []
         for row in range(0, self.model.rowCount()):
-            if self.model.item(row, 1).checkState() == 0:
+            if self.model.item(row, 1).checkState() == QtCore.Qt.CheckState.Unchecked:
                 continue
             instructors.append(self.model.item(row, 0).text())
         name = self.parent.lineEditName.text()
@@ -89,12 +101,21 @@ class Subject:
         description = self.parent.lineEditDescription.text()
         divisible = 1 if self.parent.radioYes.isChecked() else 0
         if self.parent.radioLec.isChecked():
-            type = 'lec'
+            type = "lec"
         elif self.parent.radioLab.isChecked():
-            type = 'lab'
+            type = "lab"
         else:
-            type = 'any'
-        data = [name, hours, code, description, json.dumps(instructors), divisible, type, self.id]
+            type = "any"
+        data = [
+            name,
+            hours,
+            code,
+            description,
+            json.dumps(instructors),
+            divisible,
+            type,
+            self.id,
+        ]
         if not self.id:
             data.pop()
         self.insertSubject(data)
@@ -106,12 +127,14 @@ class Subject:
         cursor = conn.cursor()
         if len(data) > 7:
             cursor.execute(
-                'UPDATE subjects SET name = ?, hours = ?, code = ?, description = ?, instructors = ?, divisible = ?, type = ? WHERE id = ?',
-                data)
+                "UPDATE subjects SET name = ?, hours = ?, code = ?, description = ?, instructors = ?, divisible = ?, type = ? WHERE id = ?",
+                data,
+            )
         else:
             cursor.execute(
-                'INSERT INTO subjects (name, hours, code, description, instructors, divisible, type) VALUES (?, ?, ?, ?, ?, ?, ?)',
-                data)
+                "INSERT INTO subjects (name, hours, code, description, instructors, divisible, type) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                data,
+            )
         conn.commit()
         conn.close()
 
@@ -120,7 +143,9 @@ class Tree:
     def __init__(self, tree):
         self.tree = tree
         self.model = model = QtGui.QStandardItemModel()
-        model.setHorizontalHeaderLabels(['ID', 'Code', 'Name', 'Type', 'Instructors', 'Operation'])
+        model.setHorizontalHeaderLabels(
+            ["ID", "Code", "Name", "Type", "Instructors", "Operation"]
+        )
         tree.setModel(model)
         tree.setColumnHidden(0, True)
         self.display()
@@ -129,9 +154,9 @@ class Tree:
         self.model.removeRows(0, self.model.rowCount())
         conn = db.getConnection()
         cursor = conn.cursor()
-        cursor.execute('SELECT id, code, name, type, instructors FROM subjects')
+        cursor.execute("SELECT id, code, name, type, instructors FROM subjects")
         result = cursor.fetchall()
-        cursor.execute('SELECT id, name FROM instructors WHERE active = 1')
+        cursor.execute("SELECT id, name FROM instructors WHERE active = 1")
         instructorList = dict(cursor.fetchall())
         conn.close()
         for entry in result:
@@ -144,23 +169,34 @@ class Tree:
             type = QtGui.QStandardItem(entry[3].upper())
             type.setEditable(False)
             instructorID = list(
-                set(map(lambda id: int(id), json.loads(entry[4]))).intersection(set(instructorList.keys())))
+                set(map(lambda id: int(id), json.loads(entry[4]))).intersection(
+                    set(instructorList.keys())
+                )
+            )
             if len(instructorID) > 3:
-                instructorText = ', '.join(list(map(lambda id: instructorList[id], instructorID[0:3]))) + ' and ' + str(
-                    len(instructorID) - 3) + ' more'
+                instructorText = (
+                    ", ".join(
+                        list(map(lambda id: instructorList[id], instructorID[0:3]))
+                    )
+                    + " and "
+                    + str(len(instructorID) - 3)
+                    + " more"
+                )
             elif len(instructorID) > 0:
-                instructorText = ', '.join(list(map(lambda id: instructorList[id], instructorID)))
+                instructorText = ", ".join(
+                    list(map(lambda id: instructorList[id], instructorID))
+                )
             else:
-                instructorText = ''
+                instructorText = ""
             instructors = QtGui.QStandardItem(instructorText)
             instructors.setEditable(False)
             edit = QtGui.QStandardItem()
             edit.setEditable(False)
             self.model.appendRow([id, code, name, type, instructors, edit])
             frameEdit = QtWidgets.QFrame()
-            btnEdit = QtWidgets.QPushButton('Edit', frameEdit)
+            btnEdit = QtWidgets.QPushButton("Edit", frameEdit)
             btnEdit.clicked.connect(lambda state, id=entry[0]: self.edit(id))
-            btnDelete = QtWidgets.QPushButton('Delete', frameEdit)
+            btnDelete = QtWidgets.QPushButton("Delete", frameEdit)
             btnDelete.clicked.connect(lambda state, id=entry[0]: self.delete(id))
             frameLayout = QtWidgets.QHBoxLayout(frameEdit)
             frameLayout.setContentsMargins(0, 0, 0, 0)
@@ -174,15 +210,18 @@ class Tree:
 
     def delete(self, id):
         confirm = QtWidgets.QMessageBox()
-        confirm.setIcon(QtWidgets.QMessageBox.Warning)
-        confirm.setText('Are you sure you want to delete this entry?')
-        confirm.setWindowTitle('Confirm Delete')
-        confirm.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
-        result = confirm.exec_()
+        confirm.setIcon(QtWidgets.QMessageBox.Icon.Warning)
+        confirm.setText("Are you sure you want to delete this entry?")
+        confirm.setWindowTitle("Confirm Delete")
+        confirm.setStandardButtons(
+            QtWidgets.QMessageBox.StandardButton.Yes
+            | QtWidgets.QMessageBox.StandardButton.No
+        )
+        result = confirm.exec()
         if result == 16384:
             conn = db.getConnection()
             cursor = conn.cursor()
-            cursor.execute('DELETE FROM subjects WHERE id = ?', [id])
+            cursor.execute("DELETE FROM subjects WHERE id = ?", [id])
             conn.commit()
             conn.close()
             self.display()

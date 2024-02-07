@@ -1,4 +1,4 @@
-from PyQt5 import QtWidgets, QtGui
+from PyQt6 import QtWidgets, QtGui
 from components import Database as db
 from py_ui import Share as Parent
 import json
@@ -19,7 +19,7 @@ class Share:
         self.setSharings()
         parent.btnFinish.clicked.connect(self.finish)
         parent.btnCancel.clicked.connect(self.dialog.close)
-        dialog.exec_()
+        dialog.exec()
 
     def getShareData(self):
         return tuple([self.shareId, self.shareMembersText])
@@ -27,7 +27,7 @@ class Share:
     def setSharings(self):
         self.tree = tree = self.parent.treeSections
         self.model = model = QtGui.QStandardItemModel()
-        model.setHorizontalHeaderLabels(['ID', 'Sections', 'SectionID'])
+        model.setHorizontalHeaderLabels(["ID", "Sections", "SectionID"])
         tree.setModel(model)
         tree.setColumnHidden(0, True)
         tree.setColumnHidden(2, True)
@@ -36,21 +36,43 @@ class Share:
         cursor = conn.cursor()
         # Get sections with mutual subjects
         if self.section_id:
-            cursor.execute('SELECT id, name, subjects FROM sections WHERE active = 1 AND id != ?', [self.section_id])
+            cursor.execute(
+                "SELECT id, name, subjects FROM sections WHERE active = 1 AND id != ?",
+                [self.section_id],
+            )
         else:
-            cursor.execute('SELECT id, name, subjects FROM sections WHERE active = 1')
+            cursor.execute("SELECT id, name, subjects FROM sections WHERE active = 1")
         sections = cursor.fetchall()
-        cursor.execute('SELECT id, sections FROM sharings WHERE subjectId = ? AND final = 1', [self.id])
+        cursor.execute(
+            "SELECT id, sections FROM sharings WHERE subjectId = ? AND final = 1",
+            [self.id],
+        )
         sharings = cursor.fetchall()
-        sharedSections = list(set([section for sectionGroup in list(
-            map(lambda sharing: list(map(lambda id: int(id), json.loads(sharing[1]))), sharings)) for section in
-                                   sectionGroup]))
+        sharedSections = list(
+            set(
+                [
+                    section
+                    for sectionGroup in list(
+                        map(
+                            lambda sharing: list(
+                                map(lambda id: int(id), json.loads(sharing[1]))
+                            ),
+                            sharings,
+                        )
+                    )
+                    for section in sectionGroup
+                ]
+            )
+        )
         sharings = dict(sharings)
         conn.close()
         sectionDict = {}
         for section in sections:
             sectionDict[section[0]] = section[1]
-            if self.id not in list(map(lambda id: int(id), json.loads(section[2]))) or section[0] in sharedSections:
+            if (
+                self.id not in list(map(lambda id: int(id), json.loads(section[2])))
+                or section[0] in sharedSections
+            ):
                 continue
             id = QtGui.QStandardItem()
             id.setEditable(False)
@@ -64,9 +86,11 @@ class Share:
             if self.section_id in sectionIDList:
                 continue
             id = QtGui.QStandardItem(str(key))
-            sectionList = QtGui.QStandardItem(', '.join(list(map(lambda id: sectionDict[id], sectionIDList))))
+            sectionList = QtGui.QStandardItem(
+                ", ".join(list(map(lambda id: sectionDict[id], sectionIDList)))
+            )
             sectionList.setEditable(False)
-            sectionID = QtGui.QStandardItem(','.join(map(str, sectionIDList)))
+            sectionID = QtGui.QStandardItem(",".join(map(str, sectionIDList)))
             self.model.appendRow([id, sectionList, sectionID])
 
     def finish(self):
@@ -77,15 +101,36 @@ class Share:
         conn = db.getConnection()
         cursor = conn.cursor()
         if not shareId:
-            cursor.execute('INSERT INTO sharings (subjectId, sections) VALUES (?, ?)', [self.id, json.dumps(
-                [self.section_id, self.model.item(self.tree.selectedIndexes()[0].row(), 2).text()])])
+            cursor.execute(
+                "INSERT INTO sharings (subjectId, sections) VALUES (?, ?)",
+                [
+                    self.id,
+                    json.dumps(
+                        [
+                            self.section_id,
+                            self.model.item(
+                                self.tree.selectedIndexes()[0].row(), 2
+                            ).text(),
+                        ]
+                    ),
+                ],
+            )
             self.shareId = cursor.lastrowid
         else:
-            subjectID = self.model.item(self.tree.selectedIndexes()[0].row(), 2).text().split(',')
+            subjectID = (
+                self.model.item(self.tree.selectedIndexes()[0].row(), 2)
+                .text()
+                .split(",")
+            )
             subjectID.append(self.section_id)
-            cursor.execute('UPDATE sharings SET sections = ? WHERE id = ?', [json.dumps(subjectID), shareId])
+            cursor.execute(
+                "UPDATE sharings SET sections = ? WHERE id = ?",
+                [json.dumps(subjectID), shareId],
+            )
             self.shareId = shareId
         conn.commit()
         conn.close()
-        self.shareMembersText = self.model.item(self.tree.selectedIndexes()[0].row(), 1).text()
+        self.shareMembersText = self.model.item(
+            self.tree.selectedIndexes()[0].row(), 1
+        ).text()
         self.dialog.close()

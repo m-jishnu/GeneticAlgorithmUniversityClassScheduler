@@ -1,4 +1,4 @@
-from PyQt5 import QtCore
+from PyQt6 import QtCore
 
 
 # Standard table model requires 2D header and complete dataset
@@ -11,7 +11,7 @@ class TableModel(QtCore.QAbstractTableModel):
     def data(self, index, role):
         if not index.isValid():
             return QtCore.QVariant()
-        elif role != QtCore.Qt.DisplayRole:
+        elif role != QtCore.Qt.ItemDataRole.DisplayRole:
             return QtCore.QVariant()
         return self.data[index.row()][index.column()]
 
@@ -22,9 +22,15 @@ class TableModel(QtCore.QAbstractTableModel):
         return len(self.data[0])
 
     def headerData(self, p_int, Qt_Orientation, role=None):
-        if Qt_Orientation == QtCore.Qt.Horizontal and role == QtCore.Qt.DisplayRole:
+        if (
+            Qt_Orientation == QtCore.Qt.Orientation.Horizontal
+            and role == QtCore.Qt.ItemDataRole.DisplayRole
+        ):
             return QtCore.QVariant(self.header[0][p_int])
-        elif Qt_Orientation == QtCore.Qt.Vertical and role == QtCore.Qt.DisplayRole:
+        elif (
+            Qt_Orientation == QtCore.Qt.Orientation.Vertical
+            and role == QtCore.Qt.ItemDataRole.DisplayRole
+        ):
             return QtCore.QVariant(self.header[1][p_int])
         return QtCore.QVariant()
 
