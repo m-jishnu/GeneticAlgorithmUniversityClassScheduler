@@ -24,8 +24,8 @@ class ScheduleParser:
             temporaryData.append(["", "", "", "", "", ""])
         self.model = ScheduleParserModel(header, temporaryData)
         table.setModel(self.model)
-        table.setFocusPolicy(QtCore.Qt.NoFocus)
-        table.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
+        table.setFocusPolicy(QtCore.Qt.FocusPolicy.NoFocus)
+        table.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.NoSelection)
         # table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.Fixed)
         table.verticalHeader().setSectionResizeMode(
             QtWidgets.QHeaderView.ResizeMode.Fixed
@@ -67,11 +67,11 @@ class ScheduleParserModel(TableModel.TableModel):
     def data(self, index, role):
         if not index.isValid() or not self.data[index.row()][index.column()]:
             return QtCore.QVariant()
-        elif role == QtCore.Qt.TextAlignmentRole:
-            return QtCore.Qt.AlignCenter
+        elif role == QtCore.Qt.ItemDataRole.TextAlignmentRole:
+            return QtCore.Qt.AlignmentFlag.AlignCenter
         elif role == QtCore.Qt.ItemDataRole.BackgroundRole:
             return self.data[index.row()][index.column()].background()
-        elif role == QtCore.Qt.ForegroundRole:
+        elif role == QtCore.Qt.ItemDataRole.ForegroundRole:
             return self.data[index.row()][index.column()].foreground()
         elif role != QtCore.Qt.ItemDataRole.DisplayRole:
             return QtCore.QVariant()

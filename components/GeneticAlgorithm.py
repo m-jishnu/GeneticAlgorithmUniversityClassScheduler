@@ -220,7 +220,8 @@ class GeneticAlgorithm(QtCore.QThread):
         ):
             # If hours is divisible by two and three
             if (hours / 3) % 0.5 == 0 and (hours / 2) % 0.5 == 0:
-                meetingPattern = np.random.choice(meetingPatterns)
+                index = np.random.randint(len(meetingPatterns))
+                meetingPattern = meetingPatterns[index]
 
                 if len(meetingPattern) == 3:
                     meetingPattern = days[0:3] if forceRandomMeeting else meetingPattern
