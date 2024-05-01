@@ -67,28 +67,6 @@ class MainWindow(Main.Ui_MainWindow):
         if index == 4:
             self.checkContents()
 
-    def checkContents(self):
-        # conn = Database.getConnection()
-        # cursor = conn.cursor()
-        # disabled = False
-        # cursor.execute("SELECT id FROM rooms LIMIT 1")
-        # if cursor.fetchone():
-        #     disabled = True
-        # cursor.execute("SELECT id FROM instructors LIMIT 1")
-        # if cursor.fetchone():
-        #     disabled = True
-        # cursor.execute("SELECT id FROM sections LIMIT 1")
-        # if cursor.fetchone():
-        #     disabled = True
-        # cursor.execute("SELECT id FROM subjects LIMIT 1")
-        # if cursor.fetchone():
-        #     disabled = True
-        # # self.timeStarting.setDisabled(disabled)
-        # # self.timeEnding.setDisabled(disabled)
-        # self.btnScenGenerate.setDisabled(not disabled)
-        # conn.close()
-        pass
-
     def openResult(self):
         ResultViewer.ResultViewer()
 
@@ -120,60 +98,6 @@ class MainWindow(Main.Ui_MainWindow):
             for room in rooms:
                 Room.Room.insertRoom([room[0], blankSchedule, room[1]])
             self.tabListener(1)
-
-    def importSubjects(self):
-        subjects = ioHandler.getCSVFile("subjects")
-        if subjects:
-            subjects.pop(0)
-            subjects.pop(0)
-            for subject in subjects:
-                Subject.Subject.insertSubject(
-                    [
-                        subject[1],
-                        float(subject[3]),
-                        subject[0],
-                        "",
-                        json.dumps([]),
-                        int(subject[4]),
-                        subject[2],
-                    ]
-                )
-        self.tabListener(2)
-
-    def saveAs(self):
-        ioHandler.saveAs()
-
-    def load(self):
-        ioHandler.load()
-        self.tabWidget.setCurrentIndex(0)
-        self.tabListener(0)
-
-    def loadSettings(self):
-        self.timeStarting.setTime(9)
-        self.timeEnding.setTime(4)
-
-        if self.settings["lunchbreak"]:
-            self.radioLunchYes.setChecked(True)
-        else:
-            self.radioLunchNo.setChecked(True)
-        self.editMinPop.setValue(self.settings["minimum_population"])
-        self.editMaxPop.setValue(self.settings["maximum_population"])
-        self.editMaxGen.setValue(self.settings["maximum_generations"])
-        self.editMaxCreation.setValue(self.settings["generation_tolerance"])
-        self.editMut.setValue(self.settings["mutation_rate_adjustment_trigger"])
-        self.editMaxFit.setValue(self.settings["maximum_fitness"])
-        self.editElite.setValue(int(self.settings["elite_percent"] * 100))
-        self.editDev.setValue(self.settings["deviation_tolerance"])
-        self.matrix = matrix = self.settings["evaluation_matrix"]
-        self.editSbj.setValue(matrix["subject_placement"])
-        self.editLun.setValue(matrix["lunch_break"])
-        self.editSec.setValue(matrix["student_rest"])
-        self.editIdle.setValue(matrix["idle_time"])
-        self.editInstrRest.setValue(matrix["instructor_rest"])
-        self.editInstrLoad.setValue(matrix["instructor_load"])
-        self.editMeet.setValue(matrix["meeting_pattern"])
-        self.matrixSum = sum(matrix.values())
-        self.lblTotal.setText("Total: {}%".format(self.matrixSum))
 
     # Handle Settings
     def handleSettings(self):
