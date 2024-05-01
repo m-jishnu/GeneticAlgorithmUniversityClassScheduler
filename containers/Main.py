@@ -27,9 +27,6 @@ class MainWindow(Main.Ui_MainWindow):
         self.btnScenGenerate.clicked.connect(lambda: self.openGenerate())
         self.btnInstrImport.clicked.connect(self.importInstructors)
         self.btnRoomImport.clicked.connect(self.importRooms)
-        self.btnSubjImport.clicked.connect(self.importSubjects)
-        self.actionSave_As.triggered.connect(self.saveAs)
-        self.actionOpen.triggered.connect(self.load)
         self.actionSettings.triggered.connect(lambda: self.tabWidget.setCurrentIndex(4))
         self.actionExit.triggered.connect(exit)
         self.actionNew.triggered.connect(lambda: self.new())
@@ -64,8 +61,6 @@ class MainWindow(Main.Ui_MainWindow):
         self.roomTree.display()
         self.subjTree.display()
         self.secTree.display()
-        if index == 4:
-            self.checkContents()
 
     def openResult(self):
         ResultViewer.ResultViewer()
