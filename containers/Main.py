@@ -13,8 +13,6 @@ class MainWindow(Main.Ui_MainWindow):
         self.setupUi(parent)
         self.connectButtons()
         self.settings = Settings.getSettings()
-        self.loadSettings()
-        self.handleSettings()
         self.drawTrees()
         self.tabWidget.currentChanged.connect(self.tabListener)
         self.tabWidget.setCurrentIndex(0)
@@ -70,25 +68,26 @@ class MainWindow(Main.Ui_MainWindow):
             self.checkContents()
 
     def checkContents(self):
-        conn = Database.getConnection()
-        cursor = conn.cursor()
-        disabled = False
-        cursor.execute("SELECT id FROM rooms LIMIT 1")
-        if cursor.fetchone():
-            disabled = True
-        cursor.execute("SELECT id FROM instructors LIMIT 1")
-        if cursor.fetchone():
-            disabled = True
-        cursor.execute("SELECT id FROM sections LIMIT 1")
-        if cursor.fetchone():
-            disabled = True
-        cursor.execute("SELECT id FROM subjects LIMIT 1")
-        if cursor.fetchone():
-            disabled = True
-        self.timeStarting.setDisabled(disabled)
-        self.timeEnding.setDisabled(disabled)
-        self.btnScenGenerate.setDisabled(not disabled)
-        conn.close()
+        # conn = Database.getConnection()
+        # cursor = conn.cursor()
+        # disabled = False
+        # cursor.execute("SELECT id FROM rooms LIMIT 1")
+        # if cursor.fetchone():
+        #     disabled = True
+        # cursor.execute("SELECT id FROM instructors LIMIT 1")
+        # if cursor.fetchone():
+        #     disabled = True
+        # cursor.execute("SELECT id FROM sections LIMIT 1")
+        # if cursor.fetchone():
+        #     disabled = True
+        # cursor.execute("SELECT id FROM subjects LIMIT 1")
+        # if cursor.fetchone():
+        #     disabled = True
+        # # self.timeStarting.setDisabled(disabled)
+        # # self.timeEnding.setDisabled(disabled)
+        # self.btnScenGenerate.setDisabled(not disabled)
+        # conn.close()
+        pass
 
     def openResult(self):
         ResultViewer.ResultViewer()
@@ -150,12 +149,9 @@ class MainWindow(Main.Ui_MainWindow):
         self.tabListener(0)
 
     def loadSettings(self):
-        self.timeStarting.setTime(
-            QtCore.QTime(int(self.settings["starting_time"] / 2), 0)
-        )
-        self.timeEnding.setTime(
-            QtCore.QTime(int(self.settings["ending_time"] / 2) + 1, 0)
-        )
+        self.timeStarting.setTime(9)
+        self.timeEnding.setTime(4)
+
         if self.settings["lunchbreak"]:
             self.radioLunchYes.setChecked(True)
         else:
