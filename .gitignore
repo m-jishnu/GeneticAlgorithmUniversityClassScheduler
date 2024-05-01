@@ -1,2 +1,4 @@
 gas.db
 .idea
+__pycache__
+venv

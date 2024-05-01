@@ -14,7 +14,9 @@ class Ui_MainWindow(object):
         MainWindow.setObjectName("MainWindow")
         MainWindow.setWindowModality(QtCore.Qt.WindowModality.NonModal)
         MainWindow.resize(800, 600)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Maximum, QtWidgets.QSizePolicy.Policy.Maximum)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Policy.Maximum, QtWidgets.QSizePolicy.Policy.Maximum
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(MainWindow.sizePolicy().hasHeightForWidth())
@@ -111,14 +113,19 @@ class Ui_MainWindow(object):
         self.verticalLayout_5.addWidget(self.treeSec)
         self.tabWidget.addTab(self.tabSections, "")
         self.tabScenario = QtWidgets.QWidget()
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Policy.Preferred,
+            QtWidgets.QSizePolicy.Policy.Preferred,
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.tabScenario.sizePolicy().hasHeightForWidth())
         self.tabScenario.setSizePolicy(sizePolicy)
         self.tabScenario.setObjectName("tabScenario")
         self.verticalLayout_6 = QtWidgets.QVBoxLayout(self.tabScenario)
-        self.verticalLayout_6.setSizeConstraint(QtWidgets.QLayout.SizeConstraint.SetDefaultConstraint)
+        self.verticalLayout_6.setSizeConstraint(
+            QtWidgets.QLayout.SizeConstraint.SetDefaultConstraint
+        )
         self.verticalLayout_6.setObjectName("verticalLayout_6")
         self.groupBox_5 = QtWidgets.QGroupBox(parent=self.tabScenario)
         self.groupBox_5.setObjectName("groupBox_5")
@@ -165,7 +172,12 @@ class Ui_MainWindow(object):
         self.timeStarting.setTime(QtCore.QTime(8, 0, 0))
         self.timeStarting.setObjectName("timeStarting")
         self.gridLayout_2.addWidget(self.timeStarting, 0, 1, 1, 1)
-        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+        spacerItem = QtWidgets.QSpacerItem(
+            40,
+            20,
+            QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Minimum,
+        )
         self.gridLayout_2.addItem(spacerItem, 0, 2, 1, 1)
         self.label_5 = QtWidgets.QLabel(parent=self.groupBox_6)
         self.label_5.setObjectName("label_5")
@@ -205,7 +217,12 @@ class Ui_MainWindow(object):
         self.editElite.setProperty("value", 5)
         self.editElite.setObjectName("editElite")
         self.gridLayout_3.addWidget(self.editElite, 2, 5, 1, 1)
-        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+        spacerItem1 = QtWidgets.QSpacerItem(
+            40,
+            20,
+            QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Minimum,
+        )
         self.gridLayout_3.addItem(spacerItem1, 0, 7, 1, 1)
         self.editMaxGen = QtWidgets.QSpinBox(parent=self.groupBox_8)
         self.editMaxGen.setMinimum(50)
@@ -242,15 +259,40 @@ class Ui_MainWindow(object):
         self.editMinPop.setMaximum(10000)
         self.editMinPop.setObjectName("editMinPop")
         self.gridLayout_3.addWidget(self.editMinPop, 0, 1, 1, 1)
-        spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+        spacerItem2 = QtWidgets.QSpacerItem(
+            40,
+            20,
+            QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Minimum,
+        )
         self.gridLayout_3.addItem(spacerItem2, 0, 11, 1, 1)
-        spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+        spacerItem3 = QtWidgets.QSpacerItem(
+            40,
+            20,
+            QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Minimum,
+        )
         self.gridLayout_3.addItem(spacerItem3, 0, 10, 1, 1)
-        spacerItem4 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+        spacerItem4 = QtWidgets.QSpacerItem(
+            40,
+            20,
+            QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Minimum,
+        )
         self.gridLayout_3.addItem(spacerItem4, 0, 2, 1, 1)
-        spacerItem5 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+        spacerItem5 = QtWidgets.QSpacerItem(
+            40,
+            20,
+            QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Minimum,
+        )
         self.gridLayout_3.addItem(spacerItem5, 0, 9, 1, 1)
-        spacerItem6 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+        spacerItem6 = QtWidgets.QSpacerItem(
+            40,
+            20,
+            QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Minimum,
+        )
         self.gridLayout_3.addItem(spacerItem6, 0, 8, 1, 1)
         self.editMut = QtWidgets.QDoubleSpinBox(parent=self.groupBox_8)
         self.editMut.setMaximum(100.0)
@@ -289,7 +331,12 @@ class Ui_MainWindow(object):
         self.label_14 = QtWidgets.QLabel(parent=self.groupBox_9)
         self.label_14.setObjectName("label_14")
         self.gridLayout_4.addWidget(self.label_14, 1, 0, 1, 1)
-        spacerItem7 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+        spacerItem7 = QtWidgets.QSpacerItem(
+            40,
+            20,
+            QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Minimum,
+        )
         self.gridLayout_4.addItem(spacerItem7, 0, 2, 1, 1)
         self.editLun = QtWidgets.QSpinBox(parent=self.groupBox_9)
         self.editLun.setMaximum(100)
@@ -325,7 +372,12 @@ class Ui_MainWindow(object):
         self.lblTotal.setObjectName("lblTotal")
         self.gridLayout_4.addWidget(self.lblTotal, 8, 0, 1, 1)
         self.verticalLayout_6.addWidget(self.groupBox_9)
-        spacerItem8 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
+        spacerItem8 = QtWidgets.QSpacerItem(
+            20,
+            40,
+            QtWidgets.QSizePolicy.Policy.Minimum,
+            QtWidgets.QSizePolicy.Policy.Expanding,
+        )
         self.verticalLayout_6.addItem(spacerItem8)
         self.tabWidget.addTab(self.tabScenario, "")
         self.verticalLayout.addWidget(self.tabWidget)
@@ -409,71 +461,154 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "Genetic Algorithm Scheduler"))
-        self.tabInstructors.setWhatsThis(_translate("MainWindow", "<html><head/><body><p><br/></p></body></html>"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Timetable Scheduler"))
+        self.tabInstructors.setWhatsThis(
+            _translate("MainWindow", "<html><head/><body><p><br/></p></body></html>")
+        )
         self.groupBox.setTitle(_translate("MainWindow", "Operation"))
         self.btnInstrAdd.setText(_translate("MainWindow", "Add Instructor"))
         self.btnInstrImport.setText(_translate("MainWindow", "Import from CSV"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabInstructors), _translate("MainWindow", "Instructors"))
+        self.tabWidget.setTabText(
+            self.tabWidget.indexOf(self.tabInstructors),
+            _translate("MainWindow", "Instructors"),
+        )
         self.groupBox_2.setTitle(_translate("MainWindow", "Operation"))
         self.btnRoomAdd.setText(_translate("MainWindow", "Add Room"))
         self.btnRoomImport.setText(_translate("MainWindow", "Import from CSV"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabRooms), _translate("MainWindow", "Rooms"))
+        self.tabWidget.setTabText(
+            self.tabWidget.indexOf(self.tabRooms), _translate("MainWindow", "Rooms")
+        )
         self.groupBox_3.setTitle(_translate("MainWindow", "Operation"))
         self.btnSubjAdd.setText(_translate("MainWindow", "Add Subject"))
         self.btnSubjImport.setText(_translate("MainWindow", "Import from CSV"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabSubjects), _translate("MainWindow", "Subjects"))
+        self.tabWidget.setTabText(
+            self.tabWidget.indexOf(self.tabSubjects),
+            _translate("MainWindow", "Subjects"),
+        )
         self.groupBox_4.setTitle(_translate("MainWindow", "Operation"))
         self.btnSecAdd.setText(_translate("MainWindow", "Add Section"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabSections), _translate("MainWindow", "Sections"))
+        self.tabWidget.setTabText(
+            self.tabWidget.indexOf(self.tabSections),
+            _translate("MainWindow", "Sections"),
+        )
         self.groupBox_5.setTitle(_translate("MainWindow", "Operation"))
         self.btnScenGenerate.setText(_translate("MainWindow", "Generate"))
         self.btnScenResult.setText(_translate("MainWindow", "View Results"))
         self.groupBox_6.setTitle(_translate("MainWindow", "School Operation Settings"))
         self.radioLunchYes.setText(_translate("MainWindow", "Yes"))
         self.radioLunchNo.setText(_translate("MainWindow", "No"))
-        self.label_6.setToolTip(_translate("MainWindow", "Assess for lunch break for sections."))
+        self.label_6.setToolTip(
+            _translate("MainWindow", "Assess for lunch break for sections.")
+        )
         self.label_6.setText(_translate("MainWindow", "Lunchbreak"))
-        self.label_4.setToolTip(_translate("MainWindow", "The opening time of the school."))
+        self.label_4.setToolTip(
+            _translate("MainWindow", "The opening time of the school.")
+        )
         self.label_4.setText(_translate("MainWindow", "Operation Starting Time"))
         self.timeStarting.setDisplayFormat(_translate("MainWindow", "h AP"))
-        self.label_5.setToolTip(_translate("MainWindow", "The closing time of the school."))
+        self.label_5.setToolTip(
+            _translate("MainWindow", "The closing time of the school.")
+        )
         self.label_5.setText(_translate("MainWindow", "Operation Ending Time"))
         self.timeEnding.setDisplayFormat(_translate("MainWindow", "h AP"))
         self.groupBox_8.setTitle(_translate("MainWindow", "Genetic Algorithm Settings"))
-        self.label_20.setToolTip(_translate("MainWindow", "The percent of population that would belong to elite."))
+        self.label_20.setToolTip(
+            _translate(
+                "MainWindow", "The percent of population that would belong to elite."
+            )
+        )
         self.label_20.setText(_translate("MainWindow", "Elite Population"))
-        self.label_21.setToolTip(_translate("MainWindow", "The maximum control of a sigma."))
+        self.label_21.setToolTip(
+            _translate("MainWindow", "The maximum control of a sigma.")
+        )
         self.label_21.setText(_translate("MainWindow", "Deviation Tolerance"))
-        self.label_12.setToolTip(_translate("MainWindow", "Stops the generation when a chromosome meets this."))
+        self.label_12.setToolTip(
+            _translate(
+                "MainWindow", "Stops the generation when a chromosome meets this."
+            )
+        )
         self.label_12.setText(_translate("MainWindow", "Maximum Fitness"))
-        self.label_11.setToolTip(_translate("MainWindow", "<html><head/><body><p>Triggers mutation rate change when the difference of average fitness falls to the specificied level.</p></body></html>"))
-        self.label_11.setText(_translate("MainWindow", "Mutation Rate Adjustment Trigger"))
-        self.label_10.setToolTip(_translate("MainWindow", "Maximum attempts for creating a valid chromosome."))
+        self.label_11.setToolTip(
+            _translate(
+                "MainWindow",
+                "<html><head/><body><p>Triggers mutation rate change when the difference of average fitness falls to the specificied level.</p></body></html>",
+            )
+        )
+        self.label_11.setText(
+            _translate("MainWindow", "Mutation Rate Adjustment Trigger")
+        )
+        self.label_10.setToolTip(
+            _translate(
+                "MainWindow", "Maximum attempts for creating a valid chromosome."
+            )
+        )
         self.label_10.setText(_translate("MainWindow", "Maximum Creation Attempts"))
-        self.label_9.setToolTip(_translate("MainWindow", "Maximum amount of generations to be performed on solution generation."))
+        self.label_9.setToolTip(
+            _translate(
+                "MainWindow",
+                "Maximum amount of generations to be performed on solution generation.",
+            )
+        )
         self.label_9.setText(_translate("MainWindow", "Maximum Generations"))
-        self.label_7.setToolTip(_translate("MainWindow", "Starting point and lowest population count of the genetic algorithm."))
+        self.label_7.setToolTip(
+            _translate(
+                "MainWindow",
+                "Starting point and lowest population count of the genetic algorithm.",
+            )
+        )
         self.label_7.setText(_translate("MainWindow", "Minimum Population Count"))
-        self.label_8.setToolTip(_translate("MainWindow", "Highest population count of the genetic algorithm."))
+        self.label_8.setToolTip(
+            _translate(
+                "MainWindow", "Highest population count of the genetic algorithm."
+            )
+        )
         self.label_8.setText(_translate("MainWindow", "Maximum Population Count"))
         self.groupBox_9.setTitle(_translate("MainWindow", "Evaluation Matrix"))
-        self.label_15.setToolTip(_translate("MainWindow", "The weight of section rest (There must be a rest for every consecutive 3 hours of session)"))
+        self.label_15.setToolTip(
+            _translate(
+                "MainWindow",
+                "The weight of section rest (There must be a rest for every consecutive 3 hours of session)",
+            )
+        )
         self.label_15.setText(_translate("MainWindow", "Section Rest"))
-        self.label_18.setToolTip(_translate("MainWindow", "The weight of sections having less idle time."))
+        self.label_18.setToolTip(
+            _translate("MainWindow", "The weight of sections having less idle time.")
+        )
         self.label_18.setText(_translate("MainWindow", "Section Idle Time"))
-        self.label_19.setToolTip(_translate("MainWindow", "The weight of having all instructors have normalized teaching load."))
+        self.label_19.setToolTip(
+            _translate(
+                "MainWindow",
+                "The weight of having all instructors have normalized teaching load.",
+            )
+        )
         self.label_19.setText(_translate("MainWindow", "Instructor Load Balance"))
-        self.label_17.setToolTip(_translate("MainWindow", "The weight of having correct meeting patterns for subject placement."))
+        self.label_17.setToolTip(
+            _translate(
+                "MainWindow",
+                "The weight of having correct meeting patterns for subject placement.",
+            )
+        )
         self.label_17.setText(_translate("MainWindow", "Meeting Pattern"))
-        self.label_16.setToolTip(_translate("MainWindow", "The weight of instructor rest (There must be a rest for every consecutive 3 hours of session)"))
+        self.label_16.setToolTip(
+            _translate(
+                "MainWindow",
+                "The weight of instructor rest (There must be a rest for every consecutive 3 hours of session)",
+            )
+        )
         self.label_16.setText(_translate("MainWindow", "Instructor Rest"))
-        self.label_13.setToolTip(_translate("MainWindow", "The weight of having all subjects placed."))
+        self.label_13.setToolTip(
+            _translate("MainWindow", "The weight of having all subjects placed.")
+        )
         self.label_13.setText(_translate("MainWindow", "Subject Placement"))
-        self.label_14.setToolTip(_translate("MainWindow", "The weight of having a lunch break."))
+        self.label_14.setToolTip(
+            _translate("MainWindow", "The weight of having a lunch break.")
+        )
         self.label_14.setText(_translate("MainWindow", "Lunch Break"))
         self.lblTotal.setText(_translate("MainWindow", "TextLabel"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabScenario), _translate("MainWindow", "Scenario Manager"))
+        self.tabWidget.setTabText(
+            self.tabWidget.indexOf(self.tabScenario),
+            _translate("MainWindow", "Settings"),
+        )
         self.menuFile.setTitle(_translate("MainWindow", "File"))
         self.menuHelp.setTitle(_translate("MainWindow", "Help"))
         self.actionNew.setText(_translate("MainWindow", "New"))
@@ -483,7 +618,9 @@ class Ui_MainWindow(object):
         self.actionSettings.setText(_translate("MainWindow", "Settings"))
         self.actionExit.setText(_translate("MainWindow", "Exit"))
         self.actionAdd_Instructor.setText(_translate("MainWindow", "Add Instructor"))
-        self.actionView_Instructors.setText(_translate("MainWindow", "View Instructors"))
+        self.actionView_Instructors.setText(
+            _translate("MainWindow", "View Instructors")
+        )
         self.actionAdd_Room.setText(_translate("MainWindow", "Add Room"))
         self.actionView_Rooms.setText(_translate("MainWindow", "View Rooms"))
         self.actionAdd_Subject.setText(_translate("MainWindow", "Add Subject"))
@@ -496,7 +633,9 @@ class Ui_MainWindow(object):
         self.actionGenerate.setText(_translate("MainWindow", "Generate"))
         self.actionImport_2.setText(_translate("MainWindow", "Import"))
         self.actionExport_2.setText(_translate("MainWindow", "Export"))
-        self.actionScenario_Summary.setText(_translate("MainWindow", "Scenario Summary"))
+        self.actionScenario_Summary.setText(
+            _translate("MainWindow", "Scenario Summary")
+        )
         self.actionGenerate_2.setText(_translate("MainWindow", "Generate"))
         self.actionView_Results_2.setText(_translate("MainWindow", "View Results"))
         self.actionInstructions.setText(_translate("MainWindow", "Instructions"))
