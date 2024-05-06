@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>600</height>
+    <height>601</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -32,7 +32,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Genetic Algorithm Scheduler</string>
+   <string>Timetable Scheduler</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="minimumSize">
@@ -98,13 +98,6 @@
              </property>
             </widget>
            </item>
-           <item>
-            <widget class="QPushButton" name="btnInstrImport">
-             <property name="text">
-              <string>Import from CSV</string>
-             </property>
-            </widget>
-           </item>
           </layout>
          </widget>
         </item>
@@ -131,13 +124,6 @@
              </property>
             </widget>
            </item>
-           <item>
-            <widget class="QPushButton" name="btnRoomImport">
-             <property name="text">
-              <string>Import from CSV</string>
-             </property>
-            </widget>
-           </item>
           </layout>
          </widget>
         </item>
@@ -161,13 +147,6 @@
             <widget class="QPushButton" name="btnSubjAdd">
              <property name="text">
               <string>Add Subject</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="btnSubjImport">
-             <property name="text">
-              <string>Import from CSV</string>
              </property>
             </widget>
            </item>
@@ -205,7 +184,7 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="tabScenario">
+      <widget class="QWidget" name="tabSettings">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
          <horstretch>0</horstretch>
@@ -229,13 +208,6 @@
             <widget class="QPushButton" name="btnScenGenerate">
              <property name="text">
               <string>Generate</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="btnScenResult">
-             <property name="text">
-              <string>View Results</string>
              </property>
             </widget>
            </item>

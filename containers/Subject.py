@@ -14,7 +14,6 @@ class Subject:
         # Add parent to custom dialog
         parent.setupUi(dialog)
         parent.radioLec.setChecked(True)
-        parent.radioYes.setChecked(True)
         if id:
             self.fillForm()
         self.setupInstructors()
@@ -26,25 +25,18 @@ class Subject:
         conn = db.getConnection()
         cursor = conn.cursor()
         cursor.execute(
-            "SELECT name, hours, code, description, divisible, type FROM subjects WHERE id = ?",
+            "SELECT name, id_to_name, hours, code, type FROM subjects WHERE id = ?",
             [self.id],
         )
         result = cursor.fetchone()
         conn.close()
         self.parent.lineEditName.setText(str(result[0]))
-        self.parent.lineEditHours.setText(str(result[1]))
-        self.parent.lineEditCode.setText(str(result[2]))
-        self.parent.lineEditDescription.setText(str(result[3]))
-        if result[4]:
-            self.parent.radioYes.setChecked(True)
-        else:
-            self.parent.radioNo.setChecked(True)
-        if result[5] == "lec":
+        self.parent.lineEditHours.setText(str(result[2]))
+        self.parent.lineEditCode.setText(str(result[3]))
+        if result[4] == "lec":
             self.parent.radioLec.setChecked(True)
-        elif result[5] == "lab":
-            self.parent.radioLab.setChecked(True)
         else:
-            self.parent.radioAny.setChecked(True)
+            self.parent.radioLab.setChecked(True)
 
     def setupInstructors(self):
         self.tree = tree = self.parent.treeSchedule
@@ -91,28 +83,26 @@ class Subject:
         ):
             return False
         instructors = []
+        id_to_name = {}
         for row in range(0, self.model.rowCount()):
             if self.model.item(row, 1).checkState() == QtCore.Qt.CheckState.Unchecked:
                 continue
-            instructors.append(self.model.item(row, 0).text())
+            instructor_id = self.model.item(row, 0).text()
+            instructors.append(instructor_id)
+            id_to_name[instructor_id] = self.model.item(row, 2).text()
         name = self.parent.lineEditName.text()
         code = self.parent.lineEditCode.text()
         hours = self.parent.lineEditHours.text()
-        description = self.parent.lineEditDescription.text()
-        divisible = 1 if self.parent.radioYes.isChecked() else 0
         if self.parent.radioLec.isChecked():
             type = "lec"
         elif self.parent.radioLab.isChecked():
             type = "lab"
-        else:
-            type = "any"
         data = [
             name,
+            json.dumps(id_to_name),
             hours,
             code,
-            description,
             json.dumps(instructors),
-            divisible,
             type,
             self.id,
         ]
@@ -125,14 +115,14 @@ class Subject:
     def insertSubject(data):
         conn = db.getConnection()
         cursor = conn.cursor()
-        if len(data) > 7:
+        if len(data) > 6:
             cursor.execute(
-                "UPDATE subjects SET name = ?, hours = ?, code = ?, description = ?, instructors = ?, divisible = ?, type = ? WHERE id = ?",
+                "UPDATE subjects SET name = ?, id_to_name = ?, hours = ?, code = ?, instructors = ?, type = ? WHERE id = ?",
                 data,
             )
         else:
             cursor.execute(
-                "INSERT INTO subjects (name, hours, code, description, instructors, divisible, type) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                "INSERT INTO subjects (name, id_to_name, hours, code, instructors, type) VALUES (?, ?, ?, ?, ?, ?)",
                 data,
             )
         conn.commit()

@@ -1,0 +1,47 @@
+{
+    "Monday": [
+        "CST 304 (SKN)",
+        "HUT 309 (RES)",
+        "CST 302 (KPC)",
+        "CST 362 (RFK)",
+        "CST 304 (SKN)",
+        "CST 306 (MNJ)",
+        "CST 302 (KPC)"
+    ],
+    "Tuesday": [
+        "CST 306 (MNJ)",
+        "CST 304 (SKN)",
+        "CST 302 (KPC)",
+        "CST 302 (KPC)",
+        "CSL 332 (RFK)",
+        "CSL 332 (RFK)",
+        "CSL 332 (RFK)"
+    ],
+    "Wednesday": [
+        "CST 306 (MNJ)",
+        "HUT 309 (RES)",
+        "CST 362 (RFK)",
+        "HUT 309 (RES)",
+        "CST 362 (RFK)",
+        "CST 302 (KPC)",
+        "CST 304 (SKN)"
+    ],
+    "Thursday": [
+        "CSL 332 (SKN)",
+        "CSL 332 (SKN)",
+        "CSL 332 (SKN)",
+        "CST 306 (MNJ)",
+        "CST 362 (RFK)",
+        "CST 362 (RFK)",
+        "CST 302 (KPC)"
+    ],
+    "Friday": [
+        "HUT 309 (RES)",
+        "CST 306 (MNJ)",
+        "CST 304 (SKN)",
+        "CST 306 (MNJ)",
+        "CST 362 (RFK)",
+        "CST 302 (KPC)",
+        "CST 304 (SKN)"
+    ]
+}

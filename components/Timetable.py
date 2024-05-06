@@ -1,26 +1,25 @@
 from PyQt6 import QtCore, QtWidgets, QtGui
-from components import Settings, TableModel
+from components import TableModel
 import json
+
+starting_time = 0  # 9:00 AM
+ending_time = 7  # 4:00 PM
 
 
 # Used for displaying toggable timetable
 class Timetable:
     def __init__(self, table, data=False):
         self.table = table
-        header = [["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]]
+        header = [["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]]
         with open("timeslots.json") as json_file:
             timeslots = json.load(json_file)["timeslots"]
-        settings = Settings.getSettings()
-        header.append(
-            timeslots[settings["starting_time"] : settings["ending_time"] + 1]
-        )
+        header.append(timeslots[starting_time:ending_time])
         self.data = data
         if not data:
             self.data = []
-            for i in range(settings["ending_time"] + 1 - settings["starting_time"]):
+            for i in range(ending_time - starting_time):
                 self.data.append(
                     [
-                        "Available",
                         "Available",
                         "Available",
                         "Available",
@@ -80,20 +79,3 @@ class TimetableModel(TableModel.TableModel):
         elif role != QtCore.Qt.ItemDataRole.DisplayRole:
             return QtCore.QVariant()
         return self.data[index.row()][index.column()]
-
-
-def generateRawTable():
-    settings = Settings.getSettings()
-    data = []
-    for i in range(settings["ending_time"] + 1 - settings["starting_time"]):
-        data.append(
-            [
-                "Available",
-                "Available",
-                "Available",
-                "Available",
-                "Available",
-                "Available",
-            ]
-        )
-    return data

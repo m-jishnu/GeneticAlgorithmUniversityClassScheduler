@@ -1,228 +1,142 @@
-from PyQt6 import QtCore, QtWidgets
-from components import (
-    Database as db,
-    ResourceTracker,
-    ScheduleParser,
-    ScenarioComposer,
-    GeneticAlgorithm,
-)
-from py_ui import Generate as Parent
-from sqlite3 import Binary
-from numpy import mean
-import pickle
-import copy
+import json
+import requests
+from components import ScenarioComposer, Utilities
+from containers import Result
+from threading import Event
+import time
 
 
 class Generate:
     def __init__(self):
-        self.totalResource = {"cpu": [], "memory": []}
-        self.tick = 0
-        self.data = {
-            "results": [],
-            "rooms": [],
-            "instructors": [],
-            "sections": [],
-            "sharings": [],
-            "subjects": [],
-        }
-        self.topChromosomes = []
-        self.meta = []
-        self.preview = True
-        self.sectionKeys = []
-        composer = ScenarioComposer.ScenarioComposer()
-        composer = composer.getScenarioData()
-        self.data.update(composer)
-        self.dialog = dialog = QtWidgets.QDialog(parent=None)
-        # Initialize custom dialog
-        self.parent = parent = Parent.Ui_Dialog()
-        # Add parent to custom dialog
-        parent.setupUi(dialog)
-        dialog.setWindowFlags(
-            QtCore.Qt.WindowType.Window
-            | QtCore.Qt.WindowType.WindowTitleHint
-            | QtCore.Qt.WindowType.CustomizeWindowHint
-        )
-        self.time = QtCore.QTime(0, 0)
-        self.timer = QtCore.QTimer()
-        self.timer.timeout.connect(self.updateTime)
-        self.timer.start(1000)
-        self.running = True
-        self.table = parent.tableSchedule
-        parent.btnPause.clicked.connect(self.togglePause)
-        parent.btnStop.clicked.connect(self.stopOperation)
-        parent.chkPreview.clicked.connect(self.togglePreview)
-        parent.cmbSection.clear()
-        for section, details in self.data["sections"].items():
-            self.sectionKeys.append(section)
-            parent.cmbSection.addItem(details[0])
-        parent.cmbSection.currentIndexChanged.connect(self.changePreview)
-        self.startWorkers()
-        dialog.exec()
+        self.result = []
+        self.event = Event()
 
-    def togglePreview(self, state):
-        self.preview = not state
+    @staticmethod
+    def convert_schedule(dic, inc=2):
+        with open("timeslots.json") as f:
+            t = json.load(f)["timeslots"]
 
-    def togglePause(self):
-        self.toggleState()
-        self.parent.btnPause.setText(
-            "Pause Generation" if self.running else "Resume Generation"
-        )
+        final = {}
+        for data in dic.values():
+            add = []
+            name = data[0]
+            for i in range(1, inc):
+                add.append(data[i])
+            availability = []
+            for week in data[inc]:
+                lst = []
+                for day in range(len(week)):
+                    if week[day] == "Available":
+                        if day == 0:
+                            lst.append("Monday")
+                        elif day == 1:
+                            lst.append("Tuesday")
+                        elif day == 2:
+                            lst.append("Wednesday")
+                        elif day == 3:
+                            lst.append("Thursday")
+                        elif day == 4:
+                            lst.append("Friday")
+                availability.append(lst)
 
-    def toggleState(self, state=None):
-        self.running = (not self.running) if state is None else state
-        self.resourceWorker.running = self.running
-        self.geneticAlgorithm.running = self.running
+            schedule = dict(zip(t, availability))
+            final[name] = [*add, schedule]
+        return final
 
-    def startWorkers(self):
-        self.resourceWorker = ResourceTrackerWorker()
-        self.resourceWorker.signal.connect(self.updateResource)
-        self.resourceWorker.start()
-        self.geneticAlgorithm = GeneticAlgorithm.GeneticAlgorithm(self.data)
-        self.geneticAlgorithm.statusSignal.connect(self.updateStatus)
-        self.geneticAlgorithm.detailsSignal.connect(self.updateDetails)
-        self.geneticAlgorithm.dataSignal.connect(self.updateView)
-        self.geneticAlgorithm.operationSignal.connect(self.updateOperation)
-        self.geneticAlgorithm.start()
+    @staticmethod
+    def convert_subject(dic):
+        final = {}
+        for data in dic.values():
+            name = data[0]
+            instructors = [value for value in json.loads(data[1]).values()]
+            hours = data[2]
+            code = data[3]
+            _type = data[5]
+            final[name] = [hours, code, _type, instructors]
+        return final
 
-    def updateStatus(self, status):
-        self.parent.lblStatus.setText("Status: {}".format(status))
-
-    def updateDetails(self, details):
-        self.parent.boxGen.setTitle("Generation #{}".format(details[0]))
-        self.parent.lblPopulation.setText("Population: {}".format(details[1]))
-        self.parent.lblMutation.setText("Mutation Rate: {}%".format(details[2]))
-        self.parent.lblFitness.setText("Average Fitness: {}%".format(details[3]))
-        self.parent.lblPreviousFitness.setText(
-            "Previous Average Fitness: {}%".format(details[4])
-        )
-        self.parent.lblHighestFitness.setText("Highest Fitness: {}%".format(details[5]))
-        self.parent.lblLowestFitness.setText("Lowest Fitness: {}%".format(details[6]))
-
-    def updateView(self, chromosomes):
-        chromosomes.reverse()
-        self.topChromosomes = copy.deepcopy(chromosomes)
-        self.changePreview(self.parent.cmbSection.currentIndex())
-
-    def changePreview(self, index):
-        data = []
-        if not len(self.topChromosomes) or not self.preview:
+    @staticmethod
+    def check(out):
+        if len(out) != 5:
+            # print("length of the dict is not 5.")
             return False
-        sections = self.topChromosomes[0][0].data["sections"]
-        rawData = self.data
-        subjects = sections[self.sectionKeys[index]]["details"]
-        for subject, details in subjects.items():
-            if not len(details):
-                continue
-            instructor = "" if not details[1] else rawData["instructors"][details[1]][0]
-            data.append(
-                {
-                    "color": None,
-                    "text": "{} \n {} \n {}".format(
-                        rawData["subjects"][subject][0],
-                        rawData["rooms"][details[0]][0],
-                        instructor,
-                    ),
-                    "instances": [
-                        [day, details[3], details[3] + details[4]] for day in details[2]
-                    ],
-                }
-            )
-        self.loadTable(data)
 
-    def loadTable(self, data=[]):
-        self.table.reset()
-        self.table.clearSpans()
-        ScheduleParser.ScheduleParser(self.table, data)
+        out_list = list(map(tuple, out.values()))
 
-    def updateOperation(self, type):
-        if type == 1:
-            self.stopOperation()
+        if not all(len(t) == 7 for t in out_list):
+            # print("Not all lists have a length of 7.")
+            return False
 
-    def updateTime(self):
-        self.time = self.time.addSecs(1)
-        self.parent.lblTime.setText(
-            "Elapsed Time: {}".format(self.time.toString("hh:mm:ss"))
-        )
+        if len(out_list) != len(set(out_list)):
+            # print("Repeating lists detected.")
+            return False
 
-    def stopOperation(self):
-        self.toggleState(False)
-        self.resourceWorker.terminate()
-        self.resourceWorker.runThread = False
-        self.geneticAlgorithm.terminate()
-        self.timer.stop()
-        if len(self.topChromosomes):
-            self.parent.btnStop.setText("View Result")
-            self.parent.btnStop.clicked.disconnect(self.stopOperation)
-            self.parent.btnStop.clicked.connect(self.dialog.close)
-            self.parent.lblCPU.setText("CPU Usage: Stopped")
-            self.parent.lblMemory.setText("Memory Usage: Stopped")
-            self.parent.lblStatus.setText("Status: Stopped")
-            self.totalResource["cpu"] = mean(self.totalResource["cpu"])
-            self.totalResource["memory"] = mean(self.totalResource["memory"])
-            self.meta = [
-                [chromosome[1], chromosome[0].fitnessDetails]
-                for chromosome in self.topChromosomes
-            ]
-            conn = db.getConnection()
-            cursor = conn.cursor()
-            cursor.execute(
-                "INSERT INTO results (content) VALUES (?)",
-                [
-                    Binary(
-                        pickle.dumps(
-                            {
-                                "data": [
-                                    chromosome[0].data
-                                    for chromosome in self.topChromosomes
-                                ],
-                                "meta": self.meta,
-                                "time": self.time.toString("hh:mm:ss"),
-                                "resource": self.totalResource,
-                                "rawData": self.data,
-                            },
-                            pickle.HIGHEST_PROTOCOL,
-                        )
-                    )
-                ],
-            )
-            conn.commit()
-            conn.close()
-        else:
-            self.dialog.close()
+        if any(len(set(t)) == 1 for t in out_list):
+            # print("A list with all values the same was found.")
+            return False
 
-    def updateResource(self, resource):
-        self.tick += 1
-        if self.tick == 3:
-            self.tick = 0
-        else:
-            self.totalResource["cpu"].append(resource[0])
-            self.totalResource["memory"].append(resource[1][1])
-        self.parent.lblCPU.setText("CPU Usage: {}%".format(resource[0]))
-        self.parent.lblMemory.setText(
-            "Memory Usage: {}% - {} MB".format(resource[1][0], resource[1][1])
-        )
-
-
-class ResourceTrackerWorker(QtCore.QThread):
-    signal = QtCore.pyqtSignal(object)
-    running = True
-    runThread = True
-
-    def __init__(self):
-        super().__init__()
-
-    def __del__(self):
-        self.wait()
-
-    def run(self):
-        while self.runThread:
-            self.sleep(1)
-            if self.running is True:
-                cpu = ResourceTracker.getCPUUsage()
-                memory = ResourceTracker.getMemoryUsage()
-                memory = [
-                    ResourceTracker.getMemoryPercentage(memory),
-                    ResourceTracker.byteToMegabyte(memory[0]),
-                ]
-                self.signal.emit([cpu, memory])
         return True
+
+    def generate_timetable(self, key, text, retry=10):
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={key}"
+        headers = {"Content-Type": "application/json"}
+        data = {"contents": [{"parts": [{"text": text}]}]}
+        for _ in range(retry):
+            print("generating...")
+            if self.event.is_set():
+                break
+            try:
+                response = requests.post(url, headers=headers, data=json.dumps(data))
+                out = json.loads(
+                    response.json()["candidates"][0]["content"]["parts"][0]["text"]
+                )
+                if not self.check(out):
+                    continue
+                self.result.append(out)
+                self.event.set()
+            except Exception:
+                continue
+
+    def get_data(self, text):
+        workers = []
+        with open("keys.json") as f:
+            keys = json.load(f)["keys"]
+        self.event.clear()
+        for key in keys:
+            worker = Utilities.Worker(self.generate_timetable, key, text)
+            worker.start()
+            workers.append(worker)
+            time.sleep(0.1)
+
+        for worker in workers:
+            worker.wait()
+
+        if self.result:
+            return self.result[0]
+
+        return False
+
+    def generate(self):
+        data = ScenarioComposer.ScenarioComposer().getScenarioData()
+        final_data = {
+            "instructors": self.convert_schedule(data["instructors"]),
+            "subjects": self.convert_subject(data["subjects"]),
+            "sections": self.convert_schedule(data["sections"], 1),
+        }
+        with open("training_data.txt") as f:
+            add_data = f.read()
+        prompt = (
+            f"generate a timetable based on the given data\n{final_data}\n{add_data}"
+        )
+        self.generating = Utilities.Generating()
+        worker = Utilities.Worker(self.get_data, prompt)
+        worker.finished.connect(self.handle_result)
+        worker.start()
+        self.generating.show()
+
+    def handle_result(self, result):
+        self.generating.close()
+        if result:
+            Result.Result().fillForm(result)
+        else:
+            Utilities.show_error("Timetable generation unsuccessful")

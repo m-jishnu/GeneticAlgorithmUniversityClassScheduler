@@ -2,3 +2,6 @@ gas.db
 .idea
 __pycache__
 venv
+final.json
+test*
+keys.json
