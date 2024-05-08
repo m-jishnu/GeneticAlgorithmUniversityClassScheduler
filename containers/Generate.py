@@ -1,15 +1,14 @@
 import json
-import requests
 from components import ScenarioComposer, Utilities
 from containers import Result
-from threading import Event
-import time
+import aiohttp
+import asyncio
 
 
 class Generate:
     def __init__(self):
         self.result = []
-        self.event = Event()
+        self.event = False
 
     @staticmethod
     def convert_schedule(dic, inc=2):
@@ -58,58 +57,57 @@ class Generate:
     @staticmethod
     def check(out):
         if len(out) != 5:
-            # print("length of the dict is not 5.")
             return False
 
         out_list = list(map(tuple, out.values()))
 
         if not all(len(t) == 7 for t in out_list):
-            # print("Not all lists have a length of 7.")
             return False
 
-        if len(out_list) != len(set(out_list)):
-            # print("Repeating lists detected.")
-            return False
+        # first_items = [lst[0] for lst in out_list]
+        # if any(first_items.count(item) > 2 for item in first_items):
+        #     return False
 
-        if any(len(set(t)) == 1 for t in out_list):
-            # print("A list with all values the same was found.")
-            return False
+        for lst in out_list:
+            if any(lst.count(item) > 2 for item in lst):
+                return False
 
         return True
 
-    def generate_timetable(self, key, text, retry=10):
+    async def generate_timetable(self, session, key, text, retry=10):
         url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={key}"
         headers = {"Content-Type": "application/json"}
         data = {"contents": [{"parts": [{"text": text}]}]}
         for _ in range(retry):
-            print("generating...")
-            if self.event.is_set():
+            if self.event:
                 break
             try:
-                response = requests.post(url, headers=headers, data=json.dumps(data))
-                out = json.loads(
-                    response.json()["candidates"][0]["content"]["parts"][0]["text"]
-                )
-                if not self.check(out):
-                    continue
-                self.result.append(out)
-                self.event.set()
+                async with session.post(
+                    url, headers=headers, data=json.dumps(data)
+                ) as response:
+                    response_json = await response.json()
+                    out = json.loads(
+                        response_json["candidates"][0]["content"]["parts"][0]["text"]
+                    )
+                    print(out)
+                    if not self.check(out):
+                        continue
+                    self.result.append(out)
+                    self.event.set()
             except Exception:
                 continue
 
-    def get_data(self, text):
-        workers = []
+    async def get_data(self, text):
+        tasks = []
         with open("keys.json") as f:
             keys = json.load(f)["keys"]
-        self.event.clear()
-        for key in keys:
-            worker = Utilities.Worker(self.generate_timetable, key, text)
-            worker.start()
-            workers.append(worker)
-            time.sleep(0.1)
-
-        for worker in workers:
-            worker.wait()
+        self.event = False
+        async with aiohttp.ClientSession() as session:
+            for key in keys:
+                task = asyncio.create_task(self.generate_timetable(session, key, text))
+                tasks.append(task)
+                await asyncio.sleep(0.1)
+            await asyncio.gather(*tasks)
 
         if self.result:
             return self.result[0]
@@ -121,7 +119,6 @@ class Generate:
         final_data = {
             "instructors": self.convert_schedule(data["instructors"]),
             "subjects": self.convert_subject(data["subjects"]),
-            "sections": self.convert_schedule(data["sections"], 1),
         }
         with open("training_data.txt") as f:
             add_data = f.read()
@@ -129,7 +126,7 @@ class Generate:
             f"generate a timetable based on the given data\n{final_data}\n{add_data}"
         )
         self.generating = Utilities.Generating()
-        worker = Utilities.Worker(self.get_data, prompt)
+        worker = Utilities.Worker(lambda: asyncio.run(self.get_data(prompt)))
         worker.finished.connect(self.handle_result)
         worker.start()
         self.generating.show()

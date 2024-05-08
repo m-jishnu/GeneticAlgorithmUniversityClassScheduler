@@ -14,7 +14,6 @@ def show_error(message):
 class Generating:
     def __init__(self):
         self.dialog = dialog = QtWidgets.QDialog()
-        # From the qt_ui generated UI
         self.parent = parent = Parent.Ui_Generating()
         parent.setupUi(dialog)
 

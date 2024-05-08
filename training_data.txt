@@ -30,20 +30,6 @@ the data template which gives info about the data
         ]
         // More subjects as needed
     },
-    "sections": {
-        "<section_name>": [
-            {
-                "<time_slot>": [
-                    "<day_of_week>",
-                    "<day_of_week>",
-                    "<day_of_week>"
-                ],
-                "<time_slot>": []
-                // More time slots as needed
-            }
-        ]
-        // More sections as needed
-    }
 }
 
 the output should be a text that strictly follow this format

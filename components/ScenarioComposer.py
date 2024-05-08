@@ -63,7 +63,6 @@ class ScenarioComposer:
         data = {
             "instructors": self.getInstructors(),
             "subjects": self.getSubjects(),
-            "sections": self.getSections(),
         }
         self.closeConnection()
         return data

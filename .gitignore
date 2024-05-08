@@ -5,3 +5,4 @@ venv
 final.json
 test*
 keys.json
+builder.ps1
