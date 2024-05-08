@@ -32,7 +32,7 @@ the data template which gives info about the data
     },
 }
 
-the output should be a text that strictly follow this format
+the output should be a text that strictly follow this format also same timetable should not be made for all days and 1 subject should come at max 2 times a day
 {
     "Monday": [
         "subject_code (instructor_name)",
