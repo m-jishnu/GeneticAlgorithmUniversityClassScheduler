@@ -12,7 +12,7 @@ class Generate:
 
     @staticmethod
     def convert_schedule(dic, inc=2):
-        with open("timeslots.json") as f:
+        with open("assets/timeslots.json") as f:
             t = json.load(f)["timeslots"]
 
         final = {}
@@ -68,6 +68,9 @@ class Generate:
         # if any(first_items.count(item) > 2 for item in first_items):
         #     return False
 
+        if len(out_list) != len(set(out_list)):
+            return False
+
         for lst in out_list:
             if any(lst.count(item) > 2 for item in lst):
                 return False
@@ -97,14 +100,16 @@ class Generate:
             except Exception:
                 continue
 
-    async def get_data(self, text):
+    async def get_data(self, input_data):
         tasks = []
-        with open("keys.json") as f:
+        with open("assets/keys.json") as f:
             keys = json.load(f)["keys"]
         self.event = False
         async with aiohttp.ClientSession() as session:
             for key in keys:
-                task = asyncio.create_task(self.generate_timetable(session, key, text))
+                task = asyncio.create_task(
+                    self.generate_timetable(session, key, input_data)
+                )
                 tasks.append(task)
                 await asyncio.sleep(0.1)
             await asyncio.gather(*tasks)
@@ -120,7 +125,7 @@ class Generate:
             "instructors": self.convert_schedule(data["instructors"]),
             "subjects": self.convert_subject(data["subjects"]),
         }
-        with open("training_data.txt") as f:
+        with open("assets/training_data.txt") as f:
             add_data = f.read()
         prompt = (
             f"generate a timetable based on the given data\n{final_data}\n{add_data}"

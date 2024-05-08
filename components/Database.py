@@ -2,7 +2,7 @@ import sqlite3
 
 
 def checkSetup():
-    conn = sqlite3.connect("dat.db")
+    conn = sqlite3.connect("assets/dat.db")
     cursor = conn.cursor()
     cursor.execute(
         "SELECT name FROM sqlite_master WHERE type='table' AND name='instructors'"
@@ -15,7 +15,7 @@ def checkSetup():
 
 
 def setup():
-    conn = sqlite3.connect("dat.db")
+    conn = sqlite3.connect("assets/dat.db")
     cursor = conn.cursor()
     create_instructors_table = """
         CREATE TABLE IF NOT EXISTS instructors (
@@ -70,4 +70,4 @@ def setup():
 
 
 def getConnection():
-    return sqlite3.connect("dat.db")
+    return sqlite3.connect("assets/dat.db")

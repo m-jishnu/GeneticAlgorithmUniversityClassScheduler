@@ -11,7 +11,7 @@ class Timetable:
     def __init__(self, table, data=False):
         self.table = table
         header = [["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]]
-        with open("timeslots.json") as json_file:
+        with open("assets/timeslots.json") as json_file:
             timeslots = json.load(json_file)["timeslots"]
         header.append(timeslots[starting_time:ending_time])
         self.data = data
