@@ -96,7 +96,7 @@ class Generate:
                     if not self.check(out):
                         continue
                     self.result.append(out)
-                    self.event.set()
+                    self.event = True
             except Exception:
                 continue
 
