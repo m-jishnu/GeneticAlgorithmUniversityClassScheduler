@@ -3,7 +3,7 @@ A research on creation of metaheuristic university class timetable scheduling so
 
 ### Installation:
 1. Clone repository.
-3. Ensure all dependencies are installed.
+3. Run `pip install -r requirements.txt`
 2. Run `python main.py` on project directory.
 
 ### Usage:
